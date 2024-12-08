@@ -1,0 +1,163 @@
+import pymysql
+from pymysql.cursors import DictCursor
+
+# 数据库配置信息
+DB_CONFIG = {
+    'host': 'localhost',  # 数据库服务器地址
+    'user': 'kwy',  # 数据库用户名
+    'password': 'wyjysysljngy0702',  # 数据库密码
+    'database': 'keshe',  # 数据库名
+    'charset': 'utf8mb4',  # 字符集
+    'cursorclass': DictCursor  # 使用字典游标，方便获取查询结果
+}
+
+class DatabaseDAO:
+    def __init__(self):
+        self.connection = pymysql.connect(**DB_CONFIG)  # 连接数据库
+        self.cursor = self.connection.cursor()  # 创建游标对象
+
+    def execute(self, sql, params=None):
+        # 执行SQL语句，params为参数列表
+        if params:
+            self.cursor.execute(sql, params)
+        else:
+            self.cursor.execute(sql)
+        self.connection.commit()  # 提交事务
+
+    def query(self, sql, params=None):
+        # 查询SQL语句，返回结果集
+        if params:
+            self.cursor.execute(sql, params)
+        else:
+            self.cursor.execute(sql)
+        return self.cursor.fetchall()  # 返回所有查询结果
+
+    def close(self):
+        # 关闭游标和数据库连接
+        self.cursor.close()
+        self.connection.close()
+
+class StudentDAO(DatabaseDAO):
+    def create_student(self, student_data):
+        # 插入新学生信息
+        sql = """
+        INSERT INTO Student (姓名, 出生日期, 身份证号, 生源地, 本科专业, 邮箱, 电话, 本科学校, 本科学校类型, 个人简历)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """
+        self.execute(sql, student_data)  # 执行插入操作
+
+    def get_student(self, student_id):
+        # 根据学生ID查询学生信息
+        sql = "SELECT * FROM Student WHERE 学生ID = %s"
+        return self.query(sql, (student_id,))  # 返回查询结果
+
+    def update_student(self, student_data, student_id):
+        # 更新学生信息
+        sql = """
+        UPDATE Student
+        SET
+        姓名 = %s, 出生日期 = %s, 身份证号 = %s, 生源地 = %s, 本科专业 = %s,
+        邮箱 = %s, 电话 = %s, 本科学校 = %s, 本科学校类型 = %s, 个人简历 = %s
+        WHERE 学生ID = %s
+        """
+        self.execute(sql, student_data + (student_id,))  # 执行更新操作
+
+    def delete_student(self, student_id):
+        # 删除学生信息
+        sql = "DELETE FROM Student WHERE 学生ID = %s"
+        self.execute(sql, (student_id,))  # 执行删除操作
+
+class ScoreDAO(DatabaseDAO):
+    def create_score(self, score_data):
+        # 插入新成绩信息
+        sql = """
+        INSERT INTO Score (学生ID, 初试各科目成绩, 复试各科目成绩)
+        VALUES (%s, %s, %s)
+        """
+        self.execute(sql, score_data)  # 执行插入操作
+
+    def get_score(self, score_id):
+        # 根据成绩ID查询成绩信息
+        sql = "SELECT * FROM Score WHERE 成绩ID = %s"
+        return self.query(sql, (score_id,))  # 返回查询结果
+
+    def update_score(self, score_data, score_id):
+        # 更新成绩信息
+        sql = """
+        UPDATE Score
+        SET 初试各科目成绩 = %s, 复试各科目成绩 = %s
+        WHERE 成绩ID = %s
+        """
+        self.execute(sql, score_data + (score_id,))  # 执行更新操作
+
+    def delete_score(self, score_id):
+        # 删除成绩信息
+        sql = "DELETE FROM Score WHERE 成绩ID = %s"
+        self.execute(sql, (score_id,))  # 执行删除操作
+
+class ApplicationVolunteerDAO(DatabaseDAO):
+    def create_application_volunteer(self, volunteer_data):
+        # 插入新报考志愿信息
+        sql = """
+        INSERT INTO ApplicationVolunteer (学生ID, 志愿导师排序, 拟报研究方向, 是否接受方向调整, 方向调整优先顺序)
+        VALUES (%s, %s, %s, %s, %s)
+        """
+        self.execute(sql, volunteer_data)  # 执行插入操作
+
+    def get_application_volunteer(self, volunteer_id):
+        # 根据志愿ID查询报考志愿信息
+        sql = "SELECT * FROM ApplicationVolunteer WHERE 志愿ID = %s"
+        return self.query(sql, (volunteer_id,))  # 返回查询结果
+
+    def update_application_volunteer(self, volunteer_data, volunteer_id):
+        # 更新报考志愿信息
+        sql = """
+        UPDATE ApplicationVolunteer
+        SET 学生ID = %s, 志愿导师排序 = %s, 拟报研究方向 = %s,
+        是否接受方向调整 = %s, 方向调整优先顺序 = %s
+        WHERE 志愿ID = %s
+        """
+        self.execute(sql, volunteer_data + (volunteer_id,))  # 执行更新操作
+
+    def delete_application_volunteer(self, volunteer_id):
+        # 删除报考志愿信息
+        sql = "DELETE FROM ApplicationVolunteer WHERE 志愿ID = %s"
+        self.execute(sql, (volunteer_id,))  # 执行删除操作
+
+# 测试业务代码
+def test_dao_operations():
+    student_dao = StudentDAO()
+    score_dao = ScoreDAO()
+    volunteer_dao = ApplicationVolunteerDAO()
+
+    # 创建学生
+    student_data = ("张三", "1990-01-01", "123456789012345678", "北京", "计算机科学与技术", "zhangsan@example.com", "12345678901", "北京大学", "985", "个人简历内容")
+    student_dao.create_student(student_data)
+
+    # 获取学生信息
+    student = student_dao.get_student(1)
+    print("学生信息：", student)
+
+    # 创建成绩
+    score_data = (1, 85.5, 90.0)
+    score_dao.create_score(score_data)
+
+    # 获取成绩信息
+    score = score_dao.get_score(1)
+    print("成绩信息：", score)
+
+    # 创建报考志愿
+    volunteer_data = (1, 1, "计算机科学与技术", True, 1)
+    volunteer_dao.create_application_volunteer(volunteer_data)
+
+    # 获取报考志愿信息
+    volunteer = volunteer_dao.get_application_volunteer(1)
+    print("报考志愿信息：", volunteer)
+
+    # 关闭DAO连接
+    student_dao.close()
+    score_dao.close()
+    volunteer_dao.close()
+
+if __name__ == "__main__":
+    test_dao_operations()
