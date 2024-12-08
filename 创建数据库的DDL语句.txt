@@ -1,0 +1,35 @@
+#1.创建学生表（Student）：
+create table Student (
+    学生id int primary key auto_increment,
+    姓名 varchar(50) not null,
+    出生日期 date not null,
+    身份证号 varchar(18) not null unique,
+    生源地 varchar(100),
+    本科专业 varchar(100),
+    邮箱 varchar(100),
+    电话 varchar(20),
+    本科学校 varchar(100),
+    本科学校类型 varchar(50),
+    个人简历 text
+);
+
+#2.创建考试成绩表（Score）
+create table Score (
+    成绩id int primary key auto_increment,
+    学生id int,
+    初试各科目成绩 float,
+    复试各科目成绩 float,
+    foreign key (学生id) references student(学生id)
+);
+
+#3.创建考生报考志愿表（ApplicationVolunteer）
+create table Applicationvolunteer (
+    志愿id int primary key auto_increment,
+    学生id int,
+    志愿导师排序 int,
+    拟报研究方向 varchar(100),
+    是否接受方向调整 boolean,
+    方向调整优先顺序 int,
+    foreign key (学生id) references student(学生id)
+);
+
