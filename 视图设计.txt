@@ -1,0 +1,54 @@
+#1.考生综合信息视图
+create view studentcomprehensiveview as
+select 
+    s.student_id,
+    s.name,
+    s.birthdate,
+    s.id_number,
+    s.origin,
+    s.undergraduate_major,
+    s.phone,
+    s.email,
+    s.undergraduate_institution,
+    s.institution_type,
+    s.resume,
+    sc.initial_scores,
+    sc.final_scores,
+    av.mentor_preference_order,
+    av.research_direction,
+    av.accept_direction_adjustment,
+    av.direction_adjustment_priority
+from 
+    student s
+left join 
+    score sc on s.student_id = sc.student_id
+left join 
+    applicationvolunteer av on s.student_id = av.student_id;
+
+#2.考生成绩统计视图
+create view studentscorestatistics as
+select 
+    student_id,
+    avg(initial_scores) as avg_initial_score,
+    max(initial_scores) as max_initial_score,
+    min(initial_scores) as min_initial_score,
+    avg(final_scores) as avg_final_score,
+    max(final_scores) as max_final_score,
+    min(final_scores) as min_final_score
+from 
+    score
+group by 
+    student_id;
+
+#3.考生报考志愿详情视图
+create view studentapplicationdetails as
+select 
+    av.volunteer_id,
+    av.student_id,
+    av.mentor_preference_order,
+    av.research_direction,
+    av.accept_direction_adjustment,
+    av.direction_adjustment_priority
+from 
+    applicationvolunteer av;
+
