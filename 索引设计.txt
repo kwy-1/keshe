@@ -1,0 +1,11 @@
+#1.考生表（Student）索引
+create index idx_student_id on student(id_number);
+create index idx_student_name on student(name);
+create index idx_student_birthdate on student(birthdate);
+
+#2.考生成绩表（Score）索引
+create index idx_score_student_id on score(student_id);
+
+#3.考生报考志愿表（ApplicationVolunteer）索引
+create index idx_volunteer_student_id on applicationvolunteer(student_id);
+
