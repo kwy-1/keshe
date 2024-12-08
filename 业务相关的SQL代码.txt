@@ -1,0 +1,28 @@
+#1.查询所有考生的基本信息、初试成绩和报考志愿
+select s.学生ID, s.姓名, s.本科专业, s.邮箱, sc.初试各科目成绩, av.拟报研究方向, av.志愿导师排序
+from Student s
+join Score sc on s.学生ID = sc.学生ID
+join ApplicationVolunteer av on s.学生ID = av.学生ID;
+
+#2.查询所有考生的基本信息和他们的复试成绩及是否接受方向调整
+select s.学生ID, s.姓名, s.电话, sc.复试各科目成绩, av.是否接受方向调整
+from Student s
+join Score sc on s.学生ID = sc.学生ID
+join ApplicationVolunteer av on s.学生ID = av.学生ID;
+
+#3.查询所有考生的初试成绩和他们的报考志愿及方向调整优先顺序
+select sc.初试各科目成绩, av.拟报研究方向, av.是否接受方向调整, av.方向调整优先顺序
+from Score sc
+join ApplicationVolunteer av on sc.学生ID = av.学生ID;
+
+#4.查询所有考生的基本信息和他们的报考志愿，如果他们接受方向调整
+select s.学生ID, s.姓名, s.本科学校, av.拟报研究方向, av.是否接受方向调整
+from Student s
+join ApplicationVolunteer av on s.学生ID = av.学生ID
+where av.是否接受方向调整 = true;
+
+#5.查询所有考生的基本信息和他们的所有成绩，包括初试和复试成绩
+select s.学生ID, s.姓名, sc.初试各科目成绩, sc.复试各科目成绩
+from Student s
+join Score sc on s.学生ID = sc.学生ID;
+
